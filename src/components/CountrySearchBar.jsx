@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
 const CountrySearchBar = ({
   cityData,
@@ -38,18 +39,20 @@ const CountrySearchBar = ({
 
   const firstTenFilteredCities = filteredCities.slice(0, 10); // only show 10 responses at a time
   return (
-    <div className="box-border">
+    <div className="box-border relative flex">
       <input
         list="cityData"
-        className="box-border w-max m-2"
-        placeholder="Search for a city"
+        className="box-border w-full py-2 px-6 text-black rounded-full placeholder:text-grey"
+        placeholder="Search for location"
         onChange={onChange}
         value={inputValue}
       />
 
-      <button type="submit" onClick={onSelectedOption} className="bg-zinc-300">
-        submit
-      </button>
+      <div className="btn-div flex self-center absolute right-0 mr-4">
+        <button type="submit" onClick={onSelectedOption}>
+          <FaMagnifyingGlass className="text-grey" />
+        </button>
+      </div>
 
       {/* Conditionally render the datalist only when filter has a length */}
       {filter && (
