@@ -17,11 +17,11 @@ const MainCityWeather = ({
     }
   };
   return (
-    <div>
-      <h3 className="font-bold">Main city weather</h3>
-      <button className="bg-zinc-300" onClick={switchUnits}>
+    <div className="main-temp py-4">
+      {/* <h3 className="font-bold">Main city weather</h3> */}
+      {/* <button className="bg-zinc-300" onClick={switchUnits}>
         Unit Switch
-      </button>
+      </button> */}
       <CountrySearchBar
         cityData={cityData}
         currentCity={currentCity}

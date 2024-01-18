@@ -7,6 +7,8 @@ import SunCard from "./components/SunCard";
 import WindCard from "./components/WindCard";
 import Footer from "./components/Footer";
 import axios from "axios";
+import FOG from "vanta/dist/vanta.fog.min";
+import * as THREE from "three";
 
 function App() {
   // state
@@ -16,10 +18,12 @@ function App() {
   const [cityData, useSetCityData] = useState([]);
   const [currentCityCord, setCurrentCityCord] = useState({ lat: "", long: "" });
   const [unit, setUnit] = useState("metric");
+  const [vantaEffect, setVantaEffect] = useState(0);
 
   // to track the initial mount
   // will persist throughout renders
   const isInitialMount = useRef(true);
+  const vantaRef = useRef(null);
 
   // get the city data on first load
   useEffect(() => {
@@ -36,6 +40,30 @@ function App() {
 
     fetchCountryData();
   }, []);
+
+  // getting the background effect
+  useEffect(() => {
+    if (!vantaEffect) {
+      setVantaEffect(
+        FOG({
+          el: vantaRef.current,
+          THREE: THREE,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          highlightColor: 0x2b00ff,
+          midtoneColor: 0xc100ff,
+          lowlightColor: 0x9400ff,
+          blurFactor: 0.7,
+        })
+      );
+    }
+    return () => {
+      if (vantaEffect) vantaEffect.destroy();
+    };
+  }, [vantaEffect]);
 
   // getting the latitde-longitude data
   useEffect(() => {
@@ -100,37 +128,42 @@ function App() {
   }, [currentCityCord]);
 
   return (
-    <div className="w-3/5 mx-auto bg-red-200">
-      <Heading />
-      <MainCityWeather
-        cityData={cityData}
-        currentCity={currentCity}
-        setCurrentCity={setCurrentCity}
-        setPrevCity={setPrevCity}
-        unit={unit}
-        setUnit={setUnit}
-      />
-      {Object.keys(weatherData).length === 0 ? (
-        <></>
-      ) : (
-        <>
-          <WindCard weatherDataWind={weatherData.wind} />
-          <SunCard
-            weatherDataSun={{
-              sun: weatherData.sys,
-              timezone: weatherData.timezone,
-            }}
-          />
-        </>
-      )}
-      <WeatherDetailCard weatherData={weatherData} />
-      <ForecastCard
-        lat={currentCityCord.lat}
-        lon={currentCityCord.long}
-        isInitialMount={isInitialMount.current}
-        unit={unit}
-      />
-      <Footer />
+    <div
+      ref={vantaRef}
+      className="outer bg-azure-radiance-200 h-screen font-montserrat text-white flex items-center"
+    >
+      <div className="w-full lg:w-9/12 m-auto p-4 flex flex-col justify-center">
+        <Heading />
+        <MainCityWeather
+          cityData={cityData}
+          currentCity={currentCity}
+          setCurrentCity={setCurrentCity}
+          setPrevCity={setPrevCity}
+          unit={unit}
+          setUnit={setUnit}
+        />
+        {Object.keys(weatherData).length === 0 ? (
+          <></>
+        ) : (
+          <>
+            <WindCard weatherDataWind={weatherData.wind} />
+            <SunCard
+              weatherDataSun={{
+                sun: weatherData.sys,
+                timezone: weatherData.timezone,
+              }}
+            />
+          </>
+        )}
+        <WeatherDetailCard weatherData={weatherData} />
+        <ForecastCard
+          lat={currentCityCord.lat}
+          lon={currentCityCord.long}
+          isInitialMount={isInitialMount.current}
+          unit={unit}
+        />
+        <Footer />
+      </div>
     </div>
   );
 }
